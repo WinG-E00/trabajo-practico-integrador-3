@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser"
 import "dotenv/config";
 import initServer from "./src/config/database.js"
-import mainRouter from "./src/routes/routerMain.router.js";
+import mainRouter from "./src/routes/main.router.js";
 
 
 
@@ -14,18 +14,14 @@ const app = express();
 
 
 //Configuracion del express
-app.use(express.json())
+app.use(express.json());
 app.use(cors());
-app.use(cookieParser())
+app.use(cookieParser());
 
 
 // Router
 app.use('/api', mainRouter);
-
-
-
-
-
+2
 
 
 const iniciarServidor = async () => {
