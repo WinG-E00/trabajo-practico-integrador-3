@@ -1,12 +1,12 @@
 import express from "express";
-import cookieParser from "cookie-parser"
+import cookieParser from "cookie-parser";
 import "dotenv/config";
-import initServer from "./src/config/database.js"
+import initServer from "./src/config/database.js";
 import mainRouter from "./src/routes/main.router.js";
+import cors from 'cors';
 
 
-
-PORT = process.env.PORT
+const PORT = process.env.PORT
 
 
 const app = express();
@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 // Router
 app.use('/api', mainRouter);
-2
+
 
 
 const iniciarServidor = async () => {
@@ -37,7 +37,6 @@ const iniciarServidor = async () => {
             console.log("Se levanto el servidor de express")
         })
 
-
     } catch (error) {
         
         console.log("Hubo un error al intentar levantar el servidor")
@@ -46,3 +45,6 @@ const iniciarServidor = async () => {
 
 
 }
+
+
+iniciarServidor()

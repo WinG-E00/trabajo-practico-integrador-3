@@ -1,4 +1,7 @@
 import { Router } from "express";
+import { authLoginController, authRegisterController } from "../controllers/auth.controller.js";
+import { validate } from "../middlewares/validate.js";
+import { loginValidaton, registerValidation } from "../middlewares/validators/auth.validators.js";
 
 
 const authRouter =  Router();
@@ -13,11 +16,14 @@ autenticado)
 ● POST /api/auth/logout → Logout limpiando la cookie de autenticación. (usuario
 autenticado)
 
-*/
 
-
-authRouter.post('/auth', )
 authRouter.post('/auth',)
-authRouter.get('/auth',)
+
 authRouter.put('/auth',)
 authRouter.post('/auth',)
+
+*/
+
+authRouter.post('/auth/register', registerValidation , validate ,authRegisterController)
+authRouter.post('/auth/login', loginValidaton , validate , authLoginController )
+authRouter.get('/auth/profile',)

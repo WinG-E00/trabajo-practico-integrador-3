@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import 'dotenv/config';
 
 
-URI= process.env.MONGODB_URI;
+const URI = process.env.MONGODB_URI;
 
 
 
