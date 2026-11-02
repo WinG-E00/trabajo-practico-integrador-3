@@ -87,7 +87,7 @@ export const getProfile = async (req, res) => {
 
         const userID = req.user.id;
 
-        const usuarioEncontrado = User.findOne({ _id: userID }).select("-password").populate("Events", "title description startDate capacity status price location organizer category")
+        const usuarioEncontrado = await User.findOne({ _id: userID }).select("-password").populate("Events", "title description startDate capacity status price location organizer category")
 
         return res.status(200).json({ "msg": "Se encontro el usuario", "data": usuarioEncontrado })
 
@@ -151,7 +151,7 @@ export const updateProfile = async (req, res) => {
 
 
 
-const logoutController = async (req, res) => {
+export const logoutController = async (req, res) => {
     try {
 
 
