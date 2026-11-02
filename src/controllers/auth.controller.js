@@ -6,7 +6,7 @@ import { comparePassword, hashPassword } from "../helpers/bcrypt.helper.js";
 
 
 export const authRegisterController = async (req , res) => {
-    
+
     try{
 
         const { username, email, role, password ,profile  } = matchedData(req);
@@ -39,13 +39,13 @@ export const authLoginController = async (req, res) => {
         const { username, password } = matchedData(req);
 
         const user = await User.findOne({username, deletedAt: null });
-        
+
         if(!user){
             return res.status(401).json({ "msg": "Credenciales invalidas"})
         }
 
         const matchPassword = comparePassword(password, user.password)
-        
+
         if(!matchPassword){
             return res.status(401).json({ "msg": "Credenciales invalidas"})
         }
@@ -81,6 +81,95 @@ export const authLoginController = async (req, res) => {
 
 
 
-export const getProfile = async () => {
+export const getProfile = async (req, res) => {
 
+    try {
+
+        const userID = req.user.id;
+
+        const usuarioEncontrado = User.findOne({ _id: userID }).select("-password").populate("Events", "title description startDate capacity status price location organizer category")
+
+        return res.status(200).json({ "msg": "Se encontro el usuario", "data": usuarioEncontrado })
+
+    } catch (error) {
+
+        console.log(error);
+        return res.status(500).json({
+            msg: "Error interno del server"
+        });
+    }
+
+};
+
+
+
+
+export const updateProfile = async (req, res) => {
+    try {
+
+      const { profile } = matchedData(req, { locations: ["body"] });
+
+      if (!profile) {
+        return res.status(400).json({ msg: "No se enviaron los datos del perfil a actualizar" });
+      }
+
+      const findedUser = await User.findById(req.user.id);
+
+      if (!findedUser) {
+        return res.status(400).json({ msg: "No se encontro el usuario" });
+      }
+
+
+      const updateUser = await User.findByIdAndUpdate(
+        req.user.id,
+        { profile: { ...user.toJSON().profile }, ...profile },
+        { returnDocument: "after", runValidators: true }
+      ).select("-password");
+
+
+
+      return res.status(200).json({
+        msg: "Se actualizo el perfil",
+        data: updateUser.profile,
+      })
+
+
+
+
+
+
+    } catch (error) {
+
+      return res.status(500).json({
+        msg: "Error interno del servidor"
+      })
+
+    }
+}
+
+
+
+
+
+const logoutController = async (req, res) => {
+    try {
+
+
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+        })
+
+        return res.status(200).json({ msg: "Logout realizado con exito" })
+
+
+    } catch (error) {
+
+        return res.status(500).json({
+            msg: "Error interno en el servidor"
+        })
+
+        
+    }
 }

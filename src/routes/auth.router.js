@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { authLoginController, authRegisterController } from "../controllers/auth.controller.js";
+import { authLoginController, authRegisterController, getProfile, updateProfile } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validate.js";
-import { loginValidaton, registerValidation } from "../middlewares/validators/auth.validators.js";
+import { loginValidaton, registerValidation, updateValidation } from "../middlewares/validators/auth.validators.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 
 const authRouter =  Router();
@@ -19,11 +20,12 @@ autenticado)
 
 authRouter.post('/auth',)
 
-authRouter.put('/auth',)
-authRouter.post('/auth',)
+
 
 */
 
 authRouter.post('/auth/register', registerValidation , validate ,authRegisterController)
 authRouter.post('/auth/login', loginValidaton , validate , authLoginController )
-authRouter.get('/auth/profile',)
+authRouter.get('/auth/profile', authMiddleware, getProfile);
+authRouter.put('/auth/profile', authMiddleware, updateValidation, updateProfile)
+authRouter.post('/auth', authMiddleware, )

@@ -92,3 +92,40 @@ export const loginValidaton = [
 
 
 
+
+export const updateValidation = [
+
+    body("profile.firstName")
+        .optional()
+        .trim()
+        .notEmpty().withMessage()
+        .isLength({ min: 2, max: 50})
+        .isAlpha("es-ES", { ignore: " " }).withMessage("frist name Solo caracteres"),
+        
+    ,
+    body('profile.lastName')
+        .optional()
+        .trim()
+        .notEmpty().withMessage()
+        .isLength({ min: 2, max: 50})
+        .isAlpha("es-ES", { ignore: " " }).withMessage("lastname Solo caracteres "),
+    
+    body('profile.birthDate')
+        .optional()
+        .trim()
+        .notEmpty().withMessage()
+        .isISO8601().withMessage("Formato de fecha invalido YYYY-MM-DD"),
+
+    body("profile.phone")
+        .optional()
+        .optional()
+        .isNumeric().withMessage("El teléfono solo puede contener números")
+        .bail()
+        .isLength({ min: 8, max: 15 }).withMessage("")
+
+
+]
+
+
+
+
