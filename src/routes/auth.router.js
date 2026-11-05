@@ -27,7 +27,8 @@ authRouter.post('/auth',)
 authRouter.post('/auth/register', registerValidation , validate ,authRegisterController)
 authRouter.post('/auth/login', loginValidaton , validate , authLoginController )
 authRouter.get('/auth/profile', authMiddleware, getProfile);
-authRouter.put('/auth/profile', authMiddleware, updateValidation, updateProfile)
-authRouter.post('/auth', authMiddleware, logoutController );
+authRouter.put('/auth/profile', authMiddleware, updateValidation, validate, updateProfile)
+authRouter.post('/auth/logout', authMiddleware, logoutController);
 
 
+export default authRouter;

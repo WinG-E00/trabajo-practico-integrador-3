@@ -1,6 +1,9 @@
 import { Router } from "express";
-import { adminMiddleware } from "../middlewares/admin.middleware";
+import { adminMiddleware } from "../middlewares/admin.middleware.js";
 import { actualizarUnUsuario, eliminarUsuario, getAllUsers, obtenerUnUsuarioPorId } from "../controllers/user.controller.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { validate } from "../middlewares/validate.js";
+import { updateUserValidation, userIdValidation } from "../middlewares/validators/users.validators.js";
 
 const usersRouter =  Router()
 
@@ -19,12 +22,11 @@ sus eventos. (solo admin)
 
 
 
-usersRouter.get('/user', adminMiddleware,  getAllUsers);
-usersRouter.get('users/:id',obtenerUnUsuarioPorId );
-usersRouter.put('/users/:id', adminMiddleware, actualizarUnUsuario);
-usersRouter.delete('/users/:id', adminMiddleware, eliminarUsuario)
+usersRouter.get('/users', authMiddleware, adminMiddleware, getAllUsers);
+usersRouter.get('/users/:id', authMiddleware, adminMiddleware, userIdValidation, validate, obtenerUnUsuarioPorId);
+usersRouter.put('/users/:id', authMiddleware, adminMiddleware, userIdValidation, updateUserValidation, validate, actualizarUnUsuario);
+usersRouter.delete('/users/:id', authMiddleware, adminMiddleware, userIdValidation, validate, eliminarUsuario);
 
 
 
-
-
+export default usersRouter;
