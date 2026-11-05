@@ -1,83 +1,90 @@
 import { body } from "express-validator";
-import { User } from "../../models/user.model";
-import mongoose from "mongoose";
+import { User } from "../../models/user.model.js";
 
 
-export const registerValidation =  [
+export const registerValidation = [
 
-    body('username')
+    body("username")
         .trim()
-        .notEmpty().withMessage()
+        .notEmpty().withMessage("El username es obligatorio")
         .bail()
-        .isLength({ min: 3, max: 20 }).withMessage()
+        .isLength({ min: 3, max: 20 }).withMessage("El username debe tener entre 3 y 20 caracteres")
         .bail()
-        .isAlphanumeric().withMessage()
-        .custom( async ( username) => {
+        .isAlphanumeric().withMessage("El username solo puede contener letras y números")
+        .bail()
+        .custom(async (username) => {
+            const usuarioEncontrado = await User.findOne({ username });
 
-            const usernameEncontrado = await mongoose.findOne({ username })
+            if (usuarioEncontrado) {
+                throw new Error("El username ya está en uso");
+            }
+        }),
 
-            if ( usernameEncontrado ) {
-                throw new Error("El username ya esta existe")
+    body("email")
+        .trim()
+        .notEmpty().withMessage("El email es obligatorio")
+        .bail()
+        .isEmail().withMessage("Debe ingresar un email válido")
+        .normalizeEmail()
+        .bail()
+        .custom(async (email) => {
+            const usuarioEncontrado = await User.findOne({ email });
+
+            if (usuarioEncontrado) {
+                throw new Error("El email ya está en uso");
+            }
+        }),
+
+    body("password")
+        .notEmpty().withMessage("La contraseña es obligatoria")
+        .bail()
+        .isStrongPassword({
+            minLength: 8,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 0,
+        }).withMessage("Debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número"),
+
+    body("role")
+        .optional()
+        .isIn(["user", "admin"]).withMessage("El rol debe ser user o admin"),
+
+    body("profile.firstName")
+        .trim()
+        .notEmpty().withMessage("El nombre es obligatorio")
+        .bail()
+        .isLength({ min: 2, max: 50 }).withMessage("El nombre debe tener entre 2 y 50 caracteres")
+        .bail()
+        .isAlpha("es-ES", { ignore: " " }).withMessage("El nombre solo puede contener letras"),
+
+    body("profile.lastName")
+        .trim()
+        .notEmpty().withMessage("El apellido es obligatorio")
+        .bail()
+        .isLength({ min: 2, max: 50 }).withMessage("El apellido debe tener entre 2 y 50 caracteres")
+        .bail()
+        .isAlpha("es-ES", { ignore: " " }).withMessage("El apellido solo puede contener letras"),
+
+    body("profile.birthDate")
+        .optional()
+        .isISO8601().withMessage("La fecha de nacimiento debe tener un formato válido")
+        .bail()
+        .custom((birthDate) => {
+            if (new Date(birthDate) > new Date()) {
+                throw new Error("La fecha de nacimiento no puede ser futura");
             }
 
-        } ),
-
-    body('email')
-        .trim()
-        .notEmpty().withMessage("Falta el email")
-        .bail()
-        .isEmail().withMessage("Debe ser un email")
-        .custom( async (email) => {
-
-            const emailEncontrado = mongoose.findOne({ email })
-
-            if(emailEncontrado) {
-                throw new Error("El email ya esta en uso")
-            }
-
-        }  ),
-
-    body('password')
-        .trim()
-        .notEmpty().withMessage("Falta el email")
-        .bail()
-        .isStrongPassword({ minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 })
-        .withMessage("mínimo 8 caracteres, con al menos una mayúscula, una minúscula y un número."),
-
-    
-    body('role')
-        .trim()
-        .notEmpty().withMessage("Falta el email")
-        .bail()
-        .isIn(['user', 'admin'])
-        .withMessage('El rol debe ser user o admin'),
-
-
-    body('profile.firstName')
-        .trim()
-        .notEmpty().withMessage()
-        .isLength({ min: 2, max: 50})
-        .isAlpha("es-ES", { ignore: " " }).withMessage("frist name Solo caracteres"),
-        
-    body('profile.lastName')
-        .trim()
-        .notEmpty().withMessage()
-        .isLength({ min: 2, max: 50})
-        .isAlpha("es-ES", { ignore: " " }).withMessage("lastname Solo caracteres "),
-    
-    body('profile.birthDate')
-        .trim()
-        .notEmpty().withMessage()
-        .isISO8601().withMessage("Formato de fecha invalido YYYY-MM-DD"),
+            return true;
+        }),
 
     body("profile.phone")
         .optional()
         .isNumeric().withMessage("El teléfono solo puede contener números")
         .bail()
-        .isLength({ min: 8, max: 15 }).withMessage("")
+        .isLength({ min: 8, max: 15 }).withMessage("El teléfono debe tener entre 8 y 15 dígitos"),
 
-]
-
+];
 
 
 export const loginValidaton = [
@@ -85,12 +92,11 @@ export const loginValidaton = [
     body("username")
         .trim()
         .notEmpty().withMessage("El username es obligatorio"),
+
     body("password")
         .notEmpty().withMessage("La contraseña es obligatoria"),
 
-] 
-
-
+];
 
 
 export const updateValidation = [
@@ -98,34 +104,37 @@ export const updateValidation = [
     body("profile.firstName")
         .optional()
         .trim()
-        .notEmpty().withMessage()
-        .isLength({ min: 2, max: 50})
-        .isAlpha("es-ES", { ignore: " " }).withMessage("frist name Solo caracteres"),
-        
-    ,
-    body('profile.lastName')
+        .notEmpty().withMessage("El nombre no puede estar vacío")
+        .bail()
+        .isLength({ min: 2, max: 50 }).withMessage("El nombre debe tener entre 2 y 50 caracteres")
+        .bail()
+        .isAlpha("es-ES", { ignore: " " }).withMessage("El nombre solo puede contener letras"),
+
+    body("profile.lastName")
         .optional()
         .trim()
-        .notEmpty().withMessage()
-        .isLength({ min: 2, max: 50})
-        .isAlpha("es-ES", { ignore: " " }).withMessage("lastname Solo caracteres "),
-    
-    body('profile.birthDate')
+        .notEmpty().withMessage("El apellido no puede estar vacío")
+        .bail()
+        .isLength({ min: 2, max: 50 }).withMessage("El apellido debe tener entre 2 y 50 caracteres")
+        .bail()
+        .isAlpha("es-ES", { ignore: " " }).withMessage("El apellido solo puede contener letras"),
+
+    body("profile.birthDate")
         .optional()
-        .trim()
-        .notEmpty().withMessage()
-        .isISO8601().withMessage("Formato de fecha invalido YYYY-MM-DD"),
+        .isISO8601().withMessage("La fecha de nacimiento debe tener un formato válido")
+        .bail()
+        .custom((birthDate) => {
+            if (new Date(birthDate) > new Date()) {
+                throw new Error("La fecha de nacimiento no puede ser futura");
+            }
+
+            return true;
+        }),
 
     body("profile.phone")
         .optional()
-        .optional()
         .isNumeric().withMessage("El teléfono solo puede contener números")
         .bail()
-        .isLength({ min: 8, max: 15 }).withMessage("")
+        .isLength({ min: 8, max: 15 }).withMessage("El teléfono debe tener entre 8 y 15 dígitos"),
 
-
-]
-
-
-
-
+];

@@ -4,8 +4,7 @@ export const generateToken = (payload) => {
     try {
 
         return jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "1h", // Token válido por 1 hora
-        // expiresIn: process.env.JWT_EXPIRES, // Alternativa desde .env
+        expiresIn: process.env.JWT_EXPIRES_IN || "1h",
         });
 
     }catch(error){

@@ -34,12 +34,17 @@ const userSchema =  new Schema({
     username: {
         type: String,
         required: true,
+        unique: true,
+        trim: true,
         minlength: 3,
         maxlength: 20,
     },
     email:{
         type: String,
+        required: true,
         unique: true,
+        trim: true,
+        lowercase: true,
 
     },
     password:{
@@ -51,20 +56,24 @@ const userSchema =  new Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    profile: profileSchema,
+    profile: {
+        type: profileSchema,
+        required: true,
+    },
     deletedAt:{
         type: Date,
         default: null
     }
 
 },{
+    timestamps: true,
+    versionKey: false,
     toJSON:{ virtuals: true},
     toObject: { virtuals: true}
 });
 
 
-//Aca tengo que agregar un virtual para hacer referencia a el modelo de events
-userSchema.virtual('Events', {
+userSchema.virtual('events', {
     ref: 'Event',
     localField: "_id",
     foreignField: "organizer"

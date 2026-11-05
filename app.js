@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 
 // Router
-app.use('/api', mainRouter);
+app.use('/', mainRouter);
 
 
 

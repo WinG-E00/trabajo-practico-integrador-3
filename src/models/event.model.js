@@ -5,18 +5,21 @@ import { Schema, model } from "mongoose";
 const locationSchema = new Schema({
     venue: {
         type: String,
-        minLenght: 3,
-        maxLenght: 100
+        required: true,
+        minlength: 3,
+        maxlength: 100,
     },
     address:{
         type: String,
-        minLenght: 5,
-        maxLenght: 150,
+        required: true,
+        minlength: 5,
+        maxlength: 150,
     },
     city: {
         type: String,
-        minLenght: 2,
-        maxLenght: 50
+        required: true,
+        minlength: 2,
+        maxlength: 50,
     }
 },{
     _id: false
@@ -28,12 +31,17 @@ const eventSchema = new Schema({
 
     title: {
         type: String,
-        minLenght: 3,
-        maxLenght: 150
+        required: true,
+        unique: true,
+        trim: true,
+        minlength: 3,
+        maxlength: 150,
     },
     description: {
         type: String,
-        minLenght:20
+        required: true,
+        minlength: 20,
+        trim: true,
     },
     startDate:{
         type: Date,
@@ -42,10 +50,18 @@ const eventSchema = new Schema({
     endDate:{
         type: Date,
         required: true,
+        validate: {
+            validator(value) {
+                return !this.startDate || value > this.startDate;
+            },
+            message: "La fecha de finalización debe ser posterior a la fecha de inicio",
+        },
     },
     capacity: {
         type: Number,
-        min: 1
+        required: true,
+        min: 1,
+        validate: Number.isInteger,
     },
     price: {
         type: Number,
@@ -57,17 +73,24 @@ const eventSchema = new Schema({
         enum: ['scheduled', 'cancelled', 'finished'],
         default: 'scheduled'
     },
-    location: locationSchema,
+    location: {
+        type: locationSchema,
+        required: true,
+    },
     organizer:{
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true,
     },
-    category: [{
+    categories: [{
         type: Schema.Types.ObjectId,
         ref: 'Category',
     }],
 
-})
+}, {
+    timestamps: true,
+    versionKey: false,
+});
 
 
 
