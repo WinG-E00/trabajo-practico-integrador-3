@@ -30,11 +30,10 @@ const iniciarServidor = async () => {
 
         // Conectarse a mongodb
         initServer()
-        console.log("Hubo un error al intentar conectarse con mongodb")
 
         // Levantar servidor
-        app.listen(3000, () => {
-            console.log("Se levanto el servidor de express")
+        app.listen(PORT, () => {
+            console.log("Se levanto el servidor de express en el puerto", PORT)
         })
 
     } catch (error) {
